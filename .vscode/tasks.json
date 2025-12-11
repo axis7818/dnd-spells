@@ -23,6 +23,20 @@
                 "command": "rm -rf spell-output"
             },
             "problemMatcher": []
+        },
+        {
+            "label": "Zip Output",
+            "type": "shell",
+            "windows": {
+                "command": "Compress-Archive -Path spell-output -DestinationPath spell-output.zip -Force"
+            },
+            "linux": {
+                "command": "zip -r spell-output.zip spell-output"
+            },
+            "osx": {
+                "command": "zip -r spell-output.zip spell-output"
+            },
+            "problemMatcher": []
         }
     ]
 }
