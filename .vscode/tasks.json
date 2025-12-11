@@ -1,0 +1,28 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Convert Spells",
+            "type": "shell",
+            "command": "python",
+            "args": [
+                "convert_spells.py"
+            ],
+            "problemMatcher": []
+        },
+        {
+            "label": "Clean Output",
+            "type": "shell",
+            "windows": {
+                "command": "if (Test-Path spell-output) { Remove-Item -Recurse -Force spell-output }"
+            },
+            "linux": {
+                "command": "rm -rf spell-output"
+            },
+            "osx": {
+                "command": "rm -rf spell-output"
+            },
+            "problemMatcher": []
+        }
+    ]
+}

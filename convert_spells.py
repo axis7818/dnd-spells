@@ -180,7 +180,7 @@ def main() -> None:
 
     for spell in spells:
         name = spell.get("name", "unnamed")
-        safe_name = re.sub(r"[^A-Za-z0-9_-]+", "-", name).strip("-") or "spell"
+        safe_name = re.sub(r"[^A-Za-z0-9_' -]+", "-", name).strip("-") or "spell"
         md = spell_to_markdown(spell)
         out_path = OUTPUT_DIR / f"{safe_name}.md"
         with out_path.open("w", encoding="utf-8") as outf:
