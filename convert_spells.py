@@ -10,14 +10,32 @@ OUTPUT_DIR = ROOT / "spell-output"
 
 
 def strip_markup(text: str) -> str:
+    # Handle patterns like:
+    #   {@cmd Text|Source}
+    #   {@cmd Text [kind]|Source}
+    # and variants with extra segments (e.g. trailing "|Emanation").
+    # We want to keep only the "Text" (including optional " [kind]") part.
+
     if not text:
-        return ""
+        return text
 
-    # Pattern matches {@cmd text|source} and captures the visible text part.
-    pattern = re.compile(r"\{@[^\s}]+\s+([^|}]+)(?:\|[^}]*)?}")
+    # Regex breakdown:
+    #   \{@          - opening marker
+    #   ([^\s}]+)    - command name (not used)
+    #   \s+          - at least one space
+    #   ([^|}\[]+)   - main display text up to '|' or ' ['
+    #   (?:\s*\[[^]]+])? - optional " [kind]" section to be discarded
+    #   \|          - separator before source/extra segments
+    #   [^}]*        - the rest up to
+    #   }            - closing brace
+    pattern = re.compile(r"\{@([^\s}]+)\s+([^|}\[]+)(?:\s*\[[^]]+])?\|[^}]*}")
 
-    # Replace each markup instance with just the inner display text.
-    return pattern.sub(lambda m: m.group(1), text)
+    def _repl(match: re.Match) -> str:
+        display = match.group(2).strip()
+        return display
+
+    # Replace all occurrences in the string
+    return pattern.sub(_repl, text)
 
 LEVEL_NAMES = {
     0: "Cantrip",
