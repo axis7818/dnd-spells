@@ -159,12 +159,47 @@ def spell_to_markdown(spell) -> str:
 
     def flatten_entries(items):
         parts = []
+
         for it in items:
+            # Plain text paragraph
             if isinstance(it, str):
                 parts.append(it)
-            elif isinstance(it, dict) and it.get("type") == "entries":
+                continue
+
+            if not isinstance(it, dict):
+                continue
+
+            it_type = it.get("type")
+
+            # Nested entries block
+            if it_type == "entries":
                 inner = it.get("entries") or []
                 parts.extend(flatten_entries(inner))
+
+            # List of items (e.g., Alarm's audible/mental alarms)
+            elif it_type == "list":
+                items_list = it.get("items") or []
+                for sub in items_list:
+                    if isinstance(sub, dict) and sub.get("type") == "item":
+                        name = sub.get("name")
+                        sub_entries = sub.get("entries") or []
+                        text = "\n".join(flatten_entries(sub_entries))
+                        if name and text:
+                            parts.append(f"## {name}\n\n{text}")
+                        elif name:
+                            parts.append(name)
+                        elif text:
+                            parts.append(text)
+                    else:
+                        # Fallback in case the structure is slightly different
+                        parts.extend(flatten_entries([sub]))
+
+            # Fallback: if an unexpected dict still has 'entries', recurse into it
+            else:
+                inner = it.get("entries") or []
+                if inner:
+                    parts.extend(flatten_entries(inner))
+
         return parts
 
     flat_entries = flatten_entries(entries)
