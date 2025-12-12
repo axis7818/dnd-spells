@@ -21,9 +21,8 @@ from convert_spells import spell_to_markdown
     ],
 )
 def test_spell_to_markdown(spell_name):
-    base_dir = Path(__file__).parent
-    spell_json_dir = base_dir / "spells_json"
-    spell_expected_dir = base_dir / "spells_expected"
+    spell_json_dir = Path("examples/spells_json")
+    spell_expected_dir = Path("examples/spells_markdown")
 
     with (spell_json_dir / f"{spell_name}.json").open("r", encoding="utf-8") as f:
         spell = json.load(f)
