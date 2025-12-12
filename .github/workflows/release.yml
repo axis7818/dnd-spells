@@ -62,5 +62,6 @@ jobs:
         with:
           tag_name: ${{ steps.ver.outputs.tag }}
           name: ${{ steps.ver.outputs.tag }}
+          prerelease: true
           files: |
             spells-${{ steps.ver.outputs.tag }}.zip
