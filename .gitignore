@@ -74,7 +74,6 @@ dmypy.json
 .pytype/
 
 # IDE / editor
-.vscode/
 .idea/
 *.swp
 *~
