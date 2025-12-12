@@ -7,12 +7,12 @@ from version import version
 from utils.convert import spell_to_markdown
 
 ROOT = Path(__file__).parent
-INPUT = ROOT / "all-spells.json"
-OUTPUT_DIR = ROOT / "spell-output"
+INPUT = ROOT / "examples/all-spells.json"
+OUTPUT_DIR = ROOT / "output/spells"
 
 
 def main() -> None:
-    OUTPUT_DIR.mkdir(exist_ok=True)
+    OUTPUT_DIR.mkdir(exist_ok=True, parents=True)
     with INPUT.open("r", encoding="utf-8") as f:
         spells = json.load(f)
 
@@ -28,7 +28,7 @@ def main() -> None:
         with out_version_path.open("w", encoding="utf-8") as outf:
             outf.write(version)
 
-    shutil.make_archive(f"spell-output-{version}", "zip", "spell-output")
+    shutil.make_archive(f"spells-{version}", "zip", OUTPUT_DIR)
 
 
 if __name__ == "__main__":

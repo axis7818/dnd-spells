@@ -6,7 +6,7 @@
             "type": "shell",
             "command": "python",
             "args": [
-                "convert_spells.py"
+                "main.py"
             ],
             "problemMatcher": []
         },
@@ -14,13 +14,13 @@
             "label": "Clean Output",
             "type": "shell",
             "windows": {
-                "command": "if (Test-Path spell-output) { Remove-Item -Recurse -Force spell-output }; Remove-Item -Force spell-output-*.zip -ErrorAction SilentlyContinue"
+                "command": "if (Test-Path output) { Remove-Item -Recurse -Force output }; Remove-Item -Force spells-*.zip -ErrorAction SilentlyContinue"
             },
             "linux": {
-                "command": "rm -rf spell-output; rm -f spell-output-*.zip"
+                "command": "rm -rf output; rm -f spells-*.zip"
             },
             "osx": {
-                "command": "rm -rf spell-output; rm -f spell-output-*.zip"
+                "command": "rm -rf output; rm -f spells-*.zip"
             },
             "problemMatcher": []
         },
