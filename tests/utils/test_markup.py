@@ -10,6 +10,7 @@ from convert_spells import strip_markup
         ("{@action Magic|XPHB}", "Magic"),
         ("{@variantrule Emanation [Area of Effect]|XPHB|Emanation}", "Emanation"),
         ("{@damage 1d6}", "1d6"),
+        ("{@scaledamage 2d8|1-9|1d8}", "1d8"),
     ],
 )
 def test_strip_markup_variants(raw, expected):
