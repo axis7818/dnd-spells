@@ -228,6 +228,6 @@ def spell_to_markdown(spell) -> str:
 
     if material_detail:
         lines.append("")
-        lines.append(f"* {material_detail}")
+        lines.append(f"\\* {material_detail}")
 
     return "\n".join(lines).strip() + "\n"
