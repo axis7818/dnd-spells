@@ -1,8 +1,14 @@
 # dnd-spells
 
-This repository is a simple python utility for converting a batch of D&D spells as a JSON array into individual markdown files for use in Obsidian.
+This repository is a simple Rust utility for converting a batch of D&D spells as a JSON array into individual markdown files for use in Obsidian.
 
 Releases are versioned and can be found on the [releases page](https://github.com/axis7818/dnd-spells/releases).
+
+## Usage
+
+- Convert using defaults: `cargo run --release`
+- Custom input/output: `cargo run --release -- --input <path.json> --output-dir <dir>`
+- Skip zip output: `cargo run --release -- --no-zip`
 
 ## Example: Gaseous Form
 
