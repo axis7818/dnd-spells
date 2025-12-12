@@ -3,6 +3,9 @@ issues
 output
 spells-*.zip
 
+# Rust / Cargo
+target/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

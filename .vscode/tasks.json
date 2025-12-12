@@ -4,9 +4,10 @@
         {
             "label": "Convert Spells",
             "type": "shell",
-            "command": "python",
+            "command": "cargo",
             "args": [
-                "main.py"
+                "run",
+                "--release"
             ],
             "problemMatcher": []
         },
@@ -25,12 +26,11 @@
             "problemMatcher": []
         },
         {
-            "label": "Pytest",
+            "label": "Cargo Test",
             "type": "shell",
-            "command": "python",
+            "command": "cargo",
             "args": [
-                "-m",
-                "pytest"
+                "test"
             ],
             "group": "test",
             "problemMatcher": []
