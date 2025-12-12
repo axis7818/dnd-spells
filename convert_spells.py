@@ -89,19 +89,21 @@ def format_time(spell):
 
 
 def format_range(spell):
-    r = spell.get("range") or {}
-    dist = r.get("distance") or {}
-    rtype = r.get("type")
-    dtype = dist.get("type")
-    amount = dist.get("amount")
+    spell_range = spell.get("range") or {}
+    spell_range_distance = spell_range.get("distance") or {}
+    spell_range_type = spell_range.get("type")
+    spell_range_distance_type = spell_range_distance.get("type")
+    spell_range_distance_amount = spell_range_distance.get("amount")
 
-    if dtype == "self":
+    if spell_range_distance_type == "unlimited":
+        return "Unlimited"
+    if spell_range_distance_type == "self":
         return "Self"
-    if dtype == "touch":
+    if spell_range_distance_type == "touch":
         return "Touch"
-    if dtype == "feet" and amount:
-        return f"{amount} ft."
-    return rtype or "Unknown"
+    if spell_range_distance_type and spell_range_distance_amount:
+        return f"{spell_range_distance_amount} {spell_range_distance_type}"
+    return spell_range_type or "Unknown"
 
 
 def format_components(spell):
