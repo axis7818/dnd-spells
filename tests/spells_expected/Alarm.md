@@ -3,7 +3,7 @@ tags:
   - Spell
   - 1stLevel
   - Ritual
-Time: 1Min
+Time: 1 Minute
 range: 30 feet
 Components: V, S, M*
 Duration: 8 Hours

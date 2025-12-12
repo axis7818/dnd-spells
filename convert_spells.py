@@ -81,9 +81,9 @@ def format_time(spell):
     elif unit == "reaction":
         code = "R"
     elif unit == "minute":
-        code = "Min"
+        code = " Minute" if number == 1 else " Minutes"
     elif unit == "hour":
-        code = "Hr"
+        code = " Hour" if number == 1 else " Hours"
     else:
         code = unit or "?"
     return f"{number}{code}" if number else code, react_condition

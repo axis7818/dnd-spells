@@ -3,7 +3,7 @@ tags:
   - Spell
   - 8thLevel
   - Concentration
-Time: 10Min
+Time: 10 Minutes
 range: 5 miles
 Components: V, S, M*
 Duration: 8 Hours
