@@ -9,12 +9,22 @@ def strip_markup(text: str) -> str:
     - "{@variantrule Hit Points|XPHB}" -> "Hit Points"
     - "{@variantrule Emanation [Area of Effect]|XPHB|Emanation}" -> "Emanation"
     - "{@damage 1d6}" -> "1d6"
+    - "{@scaledamage 2d8|1-9|1d8}" -> "1d8"
 
     If ``text`` is falsy ("" or ``None``), it is returned unchanged.
     """
 
     if not text:
         return text
+
+    # Special case: {@scaledamage base|levels|display}
+    # We want the final "display" segment, not the base damage.
+    pattern_scaledamage = re.compile(r"\{@scaledamage\s+[^|}]+\|[^|}]*\|([^}]+)}")
+
+    def _repl_scaledamage(match: re.Match) -> str:
+        return match.group(1).strip()
+
+    cleaned = pattern_scaledamage.sub(_repl_scaledamage, text)
 
     # First handle commands which include a trailing "|source" (and possibly
     # more pipe‑separated segments). We keep only the main display text before
@@ -36,7 +46,7 @@ def strip_markup(text: str) -> str:
     def _repl_with_source(match: re.Match) -> str:
         return match.group(2).strip()
 
-    cleaned = pattern_with_source.sub(_repl_with_source, text)
+    cleaned = pattern_with_source.sub(_repl_with_source, cleaned)
 
     # Then handle simpler commands with no "|source" part, such as
     # "{@damage 1d6}". In this case we keep everything after the command

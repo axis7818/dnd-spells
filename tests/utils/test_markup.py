@@ -1,6 +1,6 @@
 import pytest
 
-from convert_spells import strip_markup
+from utils.markup import strip_markup
 
 
 @pytest.mark.parametrize(
