@@ -2,6 +2,8 @@ import json
 import re
 from pathlib import Path
 
+from version import version
+
 ROOT = Path(__file__).parent
 INPUT = ROOT / "all-spells.json"
 OUTPUT_DIR = ROOT / "spell-output"
@@ -264,6 +266,9 @@ def main() -> None:
         out_path = OUTPUT_DIR / f"{safe_name}.md"
         with out_path.open("w", encoding="utf-8") as outf:
             outf.write(md)
+        out_version_path = OUTPUT_DIR / "_version.txt"
+        with out_version_path.open("w", encoding="utf-8") as outf:
+            outf.write(version)
 
 
 if __name__ == "__main__":
