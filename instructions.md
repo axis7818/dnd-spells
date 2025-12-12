@@ -7,14 +7,13 @@ Convert a JSON list of D&D spell definitions into the following markdown format:
 tags:
   - Spell
   - 1stLevel
+  - Concentration
   - Ritual
   - Upcastable
 Time: 1A
 range: 10 ft.
 Components: V, S, M*
 Duration: 1 Round
-Concentration: No
-Ritual: No
 ---
 Description
 

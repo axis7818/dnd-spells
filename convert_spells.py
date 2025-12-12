@@ -153,10 +153,12 @@ def is_upcastable(spell):
     return bool(spell.get("entriesHigherLevel"))
 
 
-def build_tags(spell):
+def build_tags(spell, is_concentration: bool = False):
     tags = ["Spell"]
     level = spell.get("level", 0)
     tags.append(LEVEL_NAMES.get(level, f"Level{level}"))
+    if is_concentration:
+        tags.append("Concentration")
     if is_ritual(spell):
         tags.append("Ritual")
     if is_upcastable(spell):
@@ -165,13 +167,11 @@ def build_tags(spell):
 
 
 def spell_to_markdown(spell) -> str:
-    tags = build_tags(spell)
     time_str = format_time(spell)
     range_str = format_range(spell)
     comp_str, material_detail = format_components(spell)
     duration_str, conc = format_duration(spell)
-    ritual_flag = "Yes" if is_ritual(spell) else "No"
-    conc_flag = "Yes" if conc else "No"
+    tags = build_tags(spell, conc)
 
     entries = spell.get("entries") or []
 
@@ -232,8 +232,6 @@ def spell_to_markdown(spell) -> str:
             f"range: {range_str}",
             f"Components: {comp_str}",
             f"Duration: {duration_str}",
-            f"Concentration: {conc_flag}",
-            f"Ritual: {ritual_flag}",
             "---",
             desc_text.strip(),
         ]
