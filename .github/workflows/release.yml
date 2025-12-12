@@ -1,0 +1,66 @@
+name: Release (tag + zip)
+
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Read version
+        id: ver
+        run: |
+          python -c "from version import version; print(version)" > .version
+          echo "tag=$(cat .version)" >> "$GITHUB_OUTPUT"
+
+      - name: Check if tag already exists
+        id: check_tag
+        run: |
+          TAG='${{ steps.ver.outputs.tag }}'
+          if git ls-remote --exit-code --tags origin "refs/tags/${TAG}" > /dev/null 2>&1; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Create and push tag
+        if: steps.check_tag.outputs.exists != 'true'
+        run: |
+          TAG='${{ steps.ver.outputs.tag }}'
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag "${TAG}"
+          git push origin "refs/tags/${TAG}"
+
+      - name: Build zip
+        if: steps.check_tag.outputs.exists != 'true'
+        run: |
+          rm -rf output
+          rm -f spells-*.zip || true
+          python main.py
+          test -f "spells-${{ steps.ver.outputs.tag }}.zip"
+
+      - name: Publish GitHub Release
+        if: steps.check_tag.outputs.exists != 'true'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.ver.outputs.tag }}
+          name: ${{ steps.ver.outputs.tag }}
+          files: |
+            spells-${{ steps.ver.outputs.tag }}.zip
