@@ -1,7 +1,14 @@
+from __future__ import annotations
+
 import re
 
 
-def strip_markup(text: str) -> str:
+_PATTERN_SCALEDAMAGE = re.compile(r"\{@scaledamage\s+[^|}]+\|[^|}]*\|([^}]+)}")
+_PATTERN_WITH_SOURCE = re.compile(r"\{@([^\s}]+)\s+([^|}\[]+)(?:\s*\[[^]]+])?\|[^}]*}")
+_PATTERN_SIMPLE = re.compile(r"\{@([^\s}]+)\s+([^}]+)}")
+
+
+def strip_markup(text: str | None) -> str | None:
     """Strip the 5eTools-style inline markup from *text*.
 
     Handles patterns such as:
@@ -17,14 +24,10 @@ def strip_markup(text: str) -> str:
     if not text:
         return text
 
-    # Special case: {@scaledamage base|levels|display}
-    # We want the final "display" segment, not the base damage.
-    pattern_scaledamage = re.compile(r"\{@scaledamage\s+[^|}]+\|[^|}]*\|([^}]+)}")
-
     def _repl_scaledamage(match: re.Match) -> str:
         return match.group(1).strip()
 
-    cleaned = pattern_scaledamage.sub(_repl_scaledamage, text)
+    cleaned = _PATTERN_SCALEDAMAGE.sub(_repl_scaledamage, text)
 
     # First handle commands which include a trailing "|source" (and possibly
     # more pipe‑separated segments). We keep only the main display text before
@@ -39,21 +42,15 @@ def strip_markup(text: str) -> str:
     #   \|          - separator before source/extra segments
     #   [^}]*        - the rest up to
     #   }            - closing brace
-    pattern_with_source = re.compile(
-        r"\{@([^\s}]+)\s+([^|}\[]+)(?:\s*\[[^]]+])?\|[^}]*}"
-    )
-
     def _repl_with_source(match: re.Match) -> str:
         return match.group(2).strip()
 
-    cleaned = pattern_with_source.sub(_repl_with_source, cleaned)
+    cleaned = _PATTERN_WITH_SOURCE.sub(_repl_with_source, cleaned)
 
     # Then handle simpler commands with no "|source" part, such as
     # "{@damage 1d6}". In this case we keep everything after the command
     # name up to the closing brace.
-    pattern_simple = re.compile(r"\{@([^\s}]+)\s+([^}]+)}")
-
     def _repl_simple(match: re.Match) -> str:
         return match.group(2).strip()
 
-    return pattern_simple.sub(_repl_simple, cleaned)
+    return _PATTERN_SIMPLE.sub(_repl_simple, cleaned)
