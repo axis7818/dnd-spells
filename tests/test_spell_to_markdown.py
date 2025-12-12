@@ -17,6 +17,7 @@ from convert_spells import spell_to_markdown
         "Meteor Swarm",
         "Sending",
         "Storm of Vengeance",
+        "Thunderwave",
     ],
 )
 def test_spell_to_markdown(spell_name):

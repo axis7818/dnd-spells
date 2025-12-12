@@ -179,6 +179,7 @@ def spell_to_markdown(spell) -> str:
     tags = build_tags(spell, conc)
 
     entries = spell.get("entries") or []
+    entries_higher_level = spell.get("entriesHigherLevel") or []
 
     def flatten_entries(items):
         parts = []
@@ -228,6 +229,36 @@ def spell_to_markdown(spell) -> str:
     flat_entries = flatten_entries(entries)
     desc_text = "\n\n".join(strip_markup(e) for e in flat_entries)
 
+    # Flatten higher-level slot text (e.g. "Using a Higher-Level Spell Slot")
+    hl_lines: list[str] = []
+
+    if entries_higher_level:
+        flat_hl_parts: list[str] = []
+
+        for block in entries_higher_level:
+            if not isinstance(block, dict):
+                continue
+
+            name = (block.get("name") or "").strip()
+            block_entries = block.get("entries") or []
+            flat_block_entries = flatten_entries(block_entries)
+            text = " ".join(
+                strip_markup(part).strip()
+                for part in flat_block_entries
+                if isinstance(part, str) and part.strip()
+            ).strip()
+
+            if not text:
+                continue
+
+            if name:
+                # Ensure a trailing period on the heading, matching expected output.
+                if not name.endswith("."):
+                    name = f"{name}."
+                hl_lines.append(f"**_{name}_** {text}")
+            else:
+                hl_lines.append(text)
+
     lines = ["---", "tags:"]
     for t in tags:
         lines.append(f"  - {t}")
@@ -246,6 +277,10 @@ def spell_to_markdown(spell) -> str:
         lines.append("")
 
     lines.append(desc_text.strip())
+
+    if hl_lines:
+        lines.append("")
+        lines.extend(hl_lines)
 
     if material_detail:
         lines.append("")
