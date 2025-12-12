@@ -63,7 +63,10 @@ def format_components(spell):
     m = comps.get("m")
     if m:
         parts.append("M*")
-        material_detail = strip_markup(str(m))
+        try:
+            material_detail = strip_markup(m['text'])
+        except (KeyError, TypeError):
+            material_detail = strip_markup(str(m))
     return ", ".join(parts) or "None", material_detail
 
 
@@ -225,6 +228,6 @@ def spell_to_markdown(spell) -> str:
 
     if material_detail:
         lines.append("")
-        lines.append(f"\\* {material_detail}")
+        lines.append(f"* {material_detail}")
 
     return "\n".join(lines).strip() + "\n"
