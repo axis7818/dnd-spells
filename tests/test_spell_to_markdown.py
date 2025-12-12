@@ -10,7 +10,9 @@ from convert_spells import spell_to_markdown
     "spell_name",
     [
         "Aid",
+        "Alarm",
         "Control Weather",
+        "Feather Fall",
         "Gaseous Form",
         "Meteor Swarm",
         "Sending",

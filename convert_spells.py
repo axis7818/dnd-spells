@@ -73,6 +73,7 @@ def format_time(spell):
     t = (spell.get("time") or [{}])[0]
     number = t.get("number")
     unit = t.get("unit", "").lower()
+    react_condition = t.get("condition")
     if unit == "action":
         code = "A"
     elif unit == "bonus action":
@@ -85,7 +86,7 @@ def format_time(spell):
         code = "Hr"
     else:
         code = unit or "?"
-    return f"{number}{code}" if number else code
+    return f"{number}{code}" if number else code, react_condition
 
 
 def format_range(spell):
@@ -169,7 +170,7 @@ def build_tags(spell, is_concentration: bool = False):
 
 
 def spell_to_markdown(spell) -> str:
-    time_str = format_time(spell)
+    time_str, react_condition = format_time(spell)
     range_str = format_range(spell)
     comp_str, material_detail = format_components(spell)
     duration_str, conc = format_duration(spell)
@@ -235,9 +236,14 @@ def spell_to_markdown(spell) -> str:
             f"Components: {comp_str}",
             f"Duration: {duration_str}",
             "---",
-            desc_text.strip(),
         ]
     )
+
+    if react_condition:
+        lines.append(f"A reaction {react_condition}")
+        lines.append("")
+
+    lines.append(desc_text.strip())
 
     if material_detail:
         lines.append("")
