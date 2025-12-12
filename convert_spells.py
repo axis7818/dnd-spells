@@ -1,3 +1,4 @@
+import shutil
 import json
 import re
 from pathlib import Path
@@ -22,9 +23,12 @@ def main() -> None:
         out_path = OUTPUT_DIR / f"{safe_name}.md"
         with out_path.open("w", encoding="utf-8") as outf:
             outf.write(md)
+
         out_version_path = OUTPUT_DIR / "_version.txt"
         with out_version_path.open("w", encoding="utf-8") as outf:
             outf.write(version)
+
+    shutil.make_archive(f"spell-output-{version}", "zip", "spell-output")
 
 
 if __name__ == "__main__":
