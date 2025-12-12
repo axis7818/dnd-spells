@@ -1,5 +1,4 @@
 import json
-import os
 import re
 from pathlib import Path
 
@@ -8,17 +7,25 @@ INPUT = ROOT / "all-spells.json"
 OUTPUT_DIR = ROOT / "spell-output"
 
 
-
 def strip_markup(text: str) -> str:
-    # Handle patterns like:
-    #   {@cmd Text|Source}
-    #   {@cmd Text [kind]|Source}
-    # and variants with extra segments (e.g. trailing "|Emanation").
-    # We want to keep only the "Text" (including optional " [kind]") part.
+    """Strip the 5eTools-style inline markup from *text*.
+
+    Handles patterns such as:
+
+    - "{@variantrule Hit Points|XPHB}" -> "Hit Points"
+    - "{@variantrule Emanation [Area of Effect]|XPHB|Emanation}" -> "Emanation"
+    - "{@damage 1d6}" -> "1d6"
+
+    If ``text`` is falsy ("" or ``None``), it is returned unchanged.
+    """
 
     if not text:
         return text
 
+    # First handle commands which include a trailing "|source" (and possibly
+    # more pipe‑separated segments). We keep only the main display text before
+    # any optional bracketed qualifier like " [Area of Effect]".
+    #
     # Regex breakdown:
     #   \{@          - opening marker
     #   ([^\s}]+)    - command name (not used)
@@ -28,14 +35,25 @@ def strip_markup(text: str) -> str:
     #   \|          - separator before source/extra segments
     #   [^}]*        - the rest up to
     #   }            - closing brace
-    pattern = re.compile(r"\{@([^\s}]+)\s+([^|}\[]+)(?:\s*\[[^]]+])?\|[^}]*}")
+    pattern_with_source = re.compile(
+        r"\{@([^\s}]+)\s+([^|}\[]+)(?:\s*\[[^]]+])?\|[^}]*}"
+    )
 
-    def _repl(match: re.Match) -> str:
-        display = match.group(2).strip()
-        return display
+    def _repl_with_source(match: re.Match) -> str:
+        return match.group(2).strip()
 
-    # Replace all occurrences in the string
-    return pattern.sub(_repl, text)
+    cleaned = pattern_with_source.sub(_repl_with_source, text)
+
+    # Then handle simpler commands with no "|source" part, such as
+    # "{@damage 1d6}". In this case we keep everything after the command
+    # name up to the closing brace.
+    pattern_simple = re.compile(r"\{@([^\s}]+)\s+([^}]+)}")
+
+    def _repl_simple(match: re.Match) -> str:
+        return match.group(2).strip()
+
+    return pattern_simple.sub(_repl_simple, cleaned)
+
 
 LEVEL_NAMES = {
     0: "Cantrip",
@@ -208,16 +226,18 @@ def spell_to_markdown(spell) -> str:
     lines = ["---", "tags:"]
     for t in tags:
         lines.append(f"  - {t}")
-    lines.extend([
-        f"Time: {time_str}",
-        f"range: {range_str}",
-        f"Components: {comp_str}",
-        f"Duration: {duration_str}",
-        f"Concentration: {conc_flag}",
-        f"Ritual: {ritual_flag}",
-        "---",
-        desc_text.strip(),
-    ])
+    lines.extend(
+        [
+            f"Time: {time_str}",
+            f"range: {range_str}",
+            f"Components: {comp_str}",
+            f"Duration: {duration_str}",
+            f"Concentration: {conc_flag}",
+            f"Ritual: {ritual_flag}",
+            "---",
+            desc_text.strip(),
+        ]
+    )
 
     if material_detail:
         lines.append("")
