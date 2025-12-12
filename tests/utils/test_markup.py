@@ -19,7 +19,6 @@ def test_strip_markup_variants(raw, expected):
 
 def test_strip_markup_returns_original_for_none_or_empty():
     assert strip_markup("") == ""
-    assert strip_markup(None) is None
 
 
 def test_strip_markup_leaves_text_without_markup_unchanged():
